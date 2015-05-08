@@ -81,6 +81,7 @@ void kms145App::setupGui(){
 }
 
 void kms145App::update() {
+	//simple version of a auto gain TODO
 	if(eStupidDownGain){
 		eStupidDownGain = false;
 		gain = gain * 0.90;
@@ -89,6 +90,7 @@ void kms145App::update() {
 	}
 	gain = gain < minGain ? (float)minGain : (float)gain;
 
+	//onset detection
 	long tNow = ofGetElapsedTimeMillis();
 	if(eBang){
 		eBang = false;
@@ -105,8 +107,8 @@ void kms145App::update() {
 		ofBackground(0);
 	}
 
-
-
+	//serial communication
+	//TODO linear interpolation between 0-255 doesn't really fit the brightness curve of El Wires
 	if(bSendSerial){
 		for(int i=0;i<wireCount;++i){
 			if(bBang){
@@ -216,12 +218,8 @@ void kms145App::audioReceived(float* input, int bufferSize, int nChannels) {
 	int numCounted = 0;
 
 	for (int i = 0; i < bufferSize; i++){
-	    float leftSample = input[i] * 0.5;
-//	    float rightSample = input[i * 2 + 1] * 0.5;
-
-	    rms += leftSample * leftSample;
-//	    rms += rightSample * rightSample;
-	    numCounted += 1;
+	    rms += input[i] * input[i];
+	    numCounted ++;
 	}
 
 	rms /= (float)numCounted;
@@ -242,6 +240,7 @@ void kms145App::audioReceived(float* input, int bufferSize, int nChannels) {
         eBang = true;
     }
 
+    //input -> fft
 	if (mode == MIC) {
 		// store input in audioInput buffer
 		memcpy(audioInput, input, sizeof(float) * bufferSize);
