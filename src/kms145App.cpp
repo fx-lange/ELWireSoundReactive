@@ -6,6 +6,7 @@
 //TODO eq by dragging
 //Todo bin settings
 //todo frequence range
+//TODO usb sound card
 
 int baud = 57600;
 
