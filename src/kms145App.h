@@ -14,6 +14,9 @@ class kms145App : public ofBaseApp {
 public:
 	void setup();
 	void setupGui();
+
+	void parameterChanged( ofAbstractParameter & parameter);
+
 	void update();
 	void setOutput(float * arrays);
 	void plot(float* array, int length, float scale, float offset);
@@ -42,14 +45,13 @@ public:
 
 	//----
 	ofxPanel gui;
-	ofxIntSlider binRange, wireCount;
-	ofxFloatSlider minGain, gain, smoothFactor, limit;
-	ofxToggle bUseAvg, bUseFilter;
+	ofParameterGroup bangDetect,autoGain,general, rootGroup;
+	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
+	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
+	ofParameter<bool> bUseAvg, bUseFilter;
 	datGuiController DC;
 
 	//onset detection
-	ofxFloatSlider decayRate, minimumThreshold;
-	ofxIntSlider onsetDelay, bangTime;
 	float threshold, currVol;
 	long tLastDetection, tBangStart;
 

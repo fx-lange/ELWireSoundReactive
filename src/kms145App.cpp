@@ -80,19 +80,70 @@ void kms145App::setup() {
 
 void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",bufferSize+25,25);
-	gui.add(binRange.setup("bin range",10,1,fft->getBinSize()/4.f));
-	gui.add(wireCount.setup("wire count",2,1,maxWireCount));
-	gui.add(bUseAvg.setup("use avg",true));
-	gui.add(bUseFilter.setup("use eq",false));
-	gui.add(gain.setup("gain",1,0,20));
-	gui.add(minGain.setup("min gain",1,0,20));
-	gui.add(limit.setup("limit",1,0,1));
-	gui.add(smoothFactor.setup("smooth factor",0.1,0.01,0.5));
-	gui.add(onsetDelay.setup("onset delay",100,0,2500));
-	gui.add(decayRate.setup("decay rate",0.5,0.01,0.3));
-	gui.add(minimumThreshold.setup("min threshold",0.1,0,1));
-	gui.add(bangTime.setup("bang time",100,0,500));
+	bangDetect.setName("bang detect");
+	bangDetect.add(onsetDelay.set("onset delay",100,0,2500));
+	bangDetect.add(decayRate.set("decay rate",0.5,0.01,0.3));
+	bangDetect.add(minimumThreshold.set("min threshold",0.1,0,1));
+	bangDetect.add(bangTime.set("bang time",100,0,500));
+	rootGroup.add(bangDetect);
+	autoGain.setName("auto gain");
+	autoGain.add(gain.set("gain",1,0,20));
+	autoGain.add(minGain.set("min gain",1,0,20));
+	autoGain.add(limit.set("limit",1,0,1));
+	rootGroup.add(autoGain);
+	general.setName("general");
+	general.add(binRange.set("bin range",10,1,fft->getBinSize()/4.f));
+	general.add(wireCount.set("wire count",2,1,maxWireCount));
+	general.add(bUseAvg.set("use avg",true));
+	general.add(bUseFilter.set("use eq",false));
+	general.add(smoothFactor.set("smooth factor",0.1,0.01,0.5));
+	rootGroup.add(general);
+	rootGroup.setName("groups");
+	gui.add(rootGroup);
 	gui.loadFromFile("settings.xml");
+
+	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&kms145App::parameterChanged);
+}
+
+void kms145App::parameterChanged( ofAbstractParameter & parameter ){
+	if(onUpdate)
+		return;
+//	if(updatingParameter) return;
+//	sender.sendParameter(parameter);
+	Json::Value path;
+	const vector<string> hierarchy = parameter.getGroupHierarchyNames();
+	for(int i=0;i<(int)hierarchy.size()-1;i++){
+		path.append(hierarchy[i]);
+	}
+
+	Json::Value json;
+	json["type"] = "update";
+
+	if(parameter.type()==typeid(ofParameter<int>).name()){
+	}else if(parameter.type()==typeid(ofParameter<float>).name()){
+		const ofParameter<float> & p = parameter.cast<float>();
+		json[ "value" ] = p.get();
+		json[ "name" ] = p.getName();
+	}else if(parameter.type()==typeid(ofParameter<bool>).name()){
+	}else if(parameter.type()==typeid(ofParameter<ofColor>).name()){
+		const ofParameter<ofColor> & p = parameter.cast<ofColor>();
+
+        Json::Value jsonArray;
+        jsonArray.append(p.get().r);
+        jsonArray.append(p.get().g);
+        jsonArray.append(p.get().b);
+
+        json[ "value" ] = jsonArray;
+        json[ "name" ] = p.getName();
+	}else{
+	}
+
+	json["path"] = path;
+	ofxJSONElement element(json);
+	ofLogNotice(element.toStyledString());
+
+	server.send( element.toStyledString() );
+
 }
 
 void kms145App::update() {
@@ -132,6 +183,20 @@ void kms145App::update() {
 				serial.writeByte((char)(smoothedOutput[i]*256.f));
 			}
 		}
+	}
+
+	//webUi
+	if(eInitRequest){
+		eInitRequest = false;
+		jsonString = DC.setFromOfParameterGroup(((ofParameterGroup&)gui.getParameter()));
+		cout << "parsed json string" << jsonString;
+		server.send(jsonString);
+	}
+
+	if(onUpdate){
+		ofParameterGroup & group = (ofParameterGroup&)gui.getParameter();
+		DC.setParamFromJson(paramUpdate,&group);
+		onUpdate = false;
 	}
 }
 
