@@ -25,6 +25,7 @@ public:
 	int plotHeight, bufferSize;
 
 	ofxFft* fft;
+	ofSoundStream stream;
 
 	float* audioInput;
 	float* fftOutput;

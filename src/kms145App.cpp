@@ -21,7 +21,7 @@ bool eStupidDownGain = false;
 
 void kms145App::setup() {
 	plotHeight = 128;
-	bufferSize = 512;
+	bufferSize = 1024;
 
 	fft = ofxFft::create(bufferSize, OF_FFT_WINDOW_HAMMING); //TODO which mode is best for us?
 
@@ -53,7 +53,8 @@ void kms145App::setup() {
 	appWidth = ofGetWidth();
 	appHeight = ofGetHeight();
 
-	ofSoundStreamSetup(0, 1, this, 44100, bufferSize, 4);
+	stream.setDeviceID(4);
+	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 	ofSoundStreamListDevices();
 
 	serial.listDevices();
