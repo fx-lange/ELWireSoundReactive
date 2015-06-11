@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxFft.h"
 #include "ofxGui.h"
+#include "datGuiController.h"
 
 #define MIC 0
 #define NOISE 1
@@ -43,6 +44,7 @@ public:
 	ofxIntSlider binRange, wireCount;
 	ofxFloatSlider minGain, gain, smoothFactor, limit;
 	ofxToggle bUseAvg, bUseFilter;
+	datGuiController DC;
 
 	//onset detection
 	ofxFloatSlider decayRate, minimumThreshold;
