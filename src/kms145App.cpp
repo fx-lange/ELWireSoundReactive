@@ -19,6 +19,11 @@ bool eBang = false;
 bool bBang = false;
 bool eStupidDownGain = false;
 
+string jsonString = "";
+
+bool onUpdate = false;
+bool eInitRequest = false;
+
 void kms145App::setup() {
 	plotHeight = 128;
 	bufferSize = 1024;
@@ -63,6 +68,14 @@ void kms145App::setup() {
 	ofBackground(0, 0, 0);
 
 	tLastDetection = ofGetElapsedTimeMillis();
+
+
+	//web socket server
+	ofxLibwebsockets::ServerOptions options = ofxLibwebsockets::defaultServerOptions();
+	options.port = 9092;
+	options.bUseSSL = false; // you'll have to manually accept this self-signed cert if 'true'!
+	bSetup = server.setup( options );
+	server.addListener(this);
 }
 
 void kms145App::setupGui(){
@@ -293,6 +306,48 @@ void kms145App::setOutput(float * array){
 	}
 }
 
+//--------------------------------------------------------------
+void kms145App::onConnect( ofxLibwebsockets::Event& args ){
+    cout<<"on connected"<<endl;
+}
+
+//--------------------------------------------------------------
+void kms145App::onOpen( ofxLibwebsockets::Event& args ){
+    cout<<"new connection open"<<endl;
+}
+
+//--------------------------------------------------------------
+void kms145App::onClose( ofxLibwebsockets::Event& args ){
+    cout<<"on close"<<endl;
+}
+
+//--------------------------------------------------------------
+void kms145App::onIdle( ofxLibwebsockets::Event& args ){
+    cout<<"on idle"<<endl;
+}
+
+//--------------------------------------------------------------
+void kms145App::onMessage( ofxLibwebsockets::Event& args ){
+    cout<<"got message "<<args.message<<endl;
+
+    // trace out string messages or JSON messages!
+    if ( !args.json.isNull() ){
+        cout << "New message: " << args.json.toStyledString() << " from " << args.conn.getClientName();
+
+        if(args.json["type"]=="initRequest"){
+        	eInitRequest = true;
+        }else if(!onUpdate){
+			paramUpdate = args.json;
+			onUpdate = true;
+        }
+    }
+}
+
+//--------------------------------------------------------------
+void kms145App::onBroadcast( ofxLibwebsockets::Event& args ){
+    cout<<"got broadcast "<<args.message<<endl;
+}
+
 void kms145App::keyPressed(int key) {
 	switch (key) {
 	case 'm':
@@ -309,5 +364,9 @@ void kms145App::keyPressed(int key) {
 		break;
 	case 'c':
 		bSendSerial = !bSendSerial;
-	}
+		break;
+	case 'j':
+    	eInitRequest = true;
+    	break;
+    }
 }

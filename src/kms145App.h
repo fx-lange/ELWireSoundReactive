@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxFft.h"
 #include "ofxGui.h"
+#include "ofxLibwebsockets.h"
 #include "datGuiController.h"
 
 #define MIC 0
@@ -55,6 +56,19 @@ public:
 	vector<float> smoothedOutput;
 	vector<float> output;
 
-	//-----
+	//--- Serial
 	ofSerial serial;
+
+	//--- WebSocket
+    ofxLibwebsockets::Server server;
+    ofxJSONElement paramUpdate;
+    bool bSetup;
+
+    // websocket methods
+	void onConnect( ofxLibwebsockets::Event& args );
+	void onOpen( ofxLibwebsockets::Event& args );
+	void onClose( ofxLibwebsockets::Event& args );
+	void onIdle( ofxLibwebsockets::Event& args );
+	void onMessage( ofxLibwebsockets::Event& args );
+	void onBroadcast( ofxLibwebsockets::Event& args );
 };
