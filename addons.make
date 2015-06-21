@@ -1,4 +1,4 @@
+ofxGui 
 ofxFft #git@github.com:fx-lange/ofxFft
-ofxGui
-ofxLibwebsockets
-ofxJSON
+ofxLibwebsockets #labatrockwell/ofxLibwebsockets
+ofxJSON #git@github.com:jefftimesten/ofxJSON
