@@ -80,23 +80,23 @@ void kms145App::setup() {
 
 void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",bufferSize+25,25);
-	bangDetect.setName("bang detect");
-	bangDetect.add(onsetDelay.set("onset delay",100,0,2500));
-	bangDetect.add(decayRate.set("decay rate",0.5,0.01,0.3));
-	bangDetect.add(minimumThreshold.set("min threshold",0.1,0,1));
-	bangDetect.add(bangTime.set("bang time",100,0,500));
+	bangDetect.setName("bangDetect");
+	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
+	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
+	bangDetect.add(minimumThreshold.set("minThreshold",0.1,0,1));
+	bangDetect.add(bangTime.set("bangTime",100,0,500));
 	rootGroup.add(bangDetect);
-	autoGain.setName("auto gain");
+	autoGain.setName("autoGain");
 	autoGain.add(gain.set("gain",1,0,20));
-	autoGain.add(minGain.set("min gain",1,0,20));
+	autoGain.add(minGain.set("minGain",1,0,20));
 	autoGain.add(limit.set("limit",1,0,1));
 	rootGroup.add(autoGain);
 	general.setName("general");
-	general.add(binRange.set("bin range",10,1,fft->getBinSize()/4.f));
-	general.add(wireCount.set("wire count",2,1,maxWireCount));
-	general.add(bUseAvg.set("use avg",true));
-	general.add(bUseFilter.set("use eq",false));
-	general.add(smoothFactor.set("smooth factor",0.1,0.01,0.5));
+	general.add(binRange.set("binRange",10,1,fft->getBinSize()/4.f));
+	general.add(wireCount.set("wireCount",2,1,maxWireCount));
+	general.add(bUseAvg.set("useAvg",true));
+	general.add(bUseFilter.set("useEq",false));
+	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
 	rootGroup.add(general);
 	rootGroup.setName("groups");
 	gui.add(rootGroup);
@@ -148,13 +148,13 @@ void kms145App::parameterChanged( ofAbstractParameter & parameter ){
 
 void kms145App::update() {
 	//simple version of a auto gain TODO
-	if(eStupidDownGain){
-		eStupidDownGain = false;
-		gain = gain * 0.90;
-	}else{
-		gain = gain * 1.00002;
-	}
-	gain = gain < minGain ? (float)minGain : (float)gain;
+//	if(eStupidDownGain){
+//		eStupidDownGain = false;
+//		gain = gain * 0.90;
+//	}else{
+//		gain = gain * 1.00002;
+//	}
+//	gain = gain < minGain ? (float)minGain : (float)gain;
 
 	//onset detection
 	long tNow = ofGetElapsedTimeMillis();
