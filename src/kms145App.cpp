@@ -7,6 +7,8 @@
 //Todo bin settings
 //todo frequence range
 //TODO usb sound card
+//TODO gui for serial & sound setup
+//TODO draw independent of buffersize
 
 int baud = 57600;
 
@@ -106,8 +108,12 @@ void kms145App::setupGui(){
 }
 
 void kms145App::parameterChanged( ofAbstractParameter & parameter ){
-	if(onUpdate)
+	ofLogVerbose("kms145App::parameterChanged");
+	if(onUpdate){
+		ofLogVerbose("kms145App::parameterChanged") << "on update -> return";
 		return;
+	}
+
 //	if(updatingParameter) return;
 //	sender.sendParameter(parameter);
 	Json::Value path;
