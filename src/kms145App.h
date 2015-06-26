@@ -2,9 +2,10 @@
 
 #include "ofMain.h"
 #include "ofxFft.h"
+#include "ofxSynchedParams.h"
 #include "ofxGui.h"
 #include "ofxLibwebsockets.h"
-#include "datGuiController.h"
+
 
 #define MIC 0
 #define NOISE 1
@@ -49,7 +50,7 @@ public:
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
 	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain;
-	datGuiController DC;
+	ofxSynchedParams DC;
 
 	//onset detection
 	float threshold, currVol;

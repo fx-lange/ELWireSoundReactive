@@ -105,6 +105,7 @@ void kms145App::setupGui(){
 	gui.add(rootGroup);
 	gui.loadFromFile("settings.xml");
 
+	DC.setupFromGui(gui);
 	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&kms145App::parameterChanged);
 }
 
@@ -197,14 +198,13 @@ void kms145App::update() {
 	//webUi
 	if(eInitRequest){
 		eInitRequest = false;
-		jsonString = DC.setFromOfParameterGroup(((ofParameterGroup&)gui.getParameter()));
+		jsonString = DC.parseParamsToJson();
 		cout << "parsed json string" << jsonString;
 		server.send(jsonString);
 	}
 
 	if(onUpdate){
-		ofParameterGroup & group = (ofParameterGroup&)gui.getParameter();
-		DC.setParamFromJson(paramUpdate,&group);
+		DC.setParamFromJson(paramUpdate);
 		onUpdate = false;
 	}
 }
