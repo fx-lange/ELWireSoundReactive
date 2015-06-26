@@ -48,7 +48,7 @@ public:
 	ofParameterGroup bangDetect,autoGain,general, rootGroup;
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
-	ofParameter<bool> bUseAvg, bUseFilter;
+	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain;
 	datGuiController DC;
 
 	//onset detection

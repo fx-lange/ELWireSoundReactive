@@ -89,6 +89,7 @@ void kms145App::setupGui(){
 	bangDetect.add(bangTime.set("bangTime",100,0,500));
 	rootGroup.add(bangDetect);
 	autoGain.setName("autoGain");
+	autoGain.add(bAutoGain.set("useAutoGain",true));
 	autoGain.add(gain.set("gain",1,0,20));
 	autoGain.add(minGain.set("minGain",1,0,20));
 	autoGain.add(limit.set("limit",1,0,1));
@@ -154,13 +155,15 @@ void kms145App::parameterChanged( ofAbstractParameter & parameter ){
 
 void kms145App::update() {
 	//simple version of a auto gain TODO
-//	if(eStupidDownGain){
-//		eStupidDownGain = false;
-//		gain = gain * 0.90;
-//	}else{
-//		gain = gain * 1.00002;
-//	}
-//	gain = gain < minGain ? (float)minGain : (float)gain;
+	if(bAutoGain){
+		if(eStupidDownGain){
+			eStupidDownGain = false;
+			gain = gain * 0.90;
+		}else{
+			gain = gain * 1.00002;
+		}
+		gain = gain < minGain ? (float)minGain : (float)gain;
+	}
 
 	//onset detection
 	long tNow = ofGetElapsedTimeMillis();
