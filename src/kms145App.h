@@ -3,8 +3,8 @@
 #include "ofMain.h"
 #include "ofxFft.h"
 #include "ofxSynchedParams.h"
-#include "ofxGui.h"
 #include "ofxLibwebsockets.h"
+#include "ofxSoundStreamGui.h"
 
 
 #define MIC 0
@@ -51,6 +51,8 @@ public:
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
 	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain;
 	ofxSynchedParams DC;
+
+	ofxSoundStreamGui streamGui;
 
 	//onset detection
 	float threshold, currVol;

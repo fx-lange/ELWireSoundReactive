@@ -28,7 +28,7 @@ bool eInitRequest = false;
 
 void kms145App::setup() {
 	plotHeight = 128;
-	bufferSize = 1024;
+	bufferSize = 1024; //TODO streamGui bufferSize changed?!
 
 	fft = ofxFft::create(bufferSize, OF_FFT_WINDOW_HAMMING); //TODO which mode is best for us?
 
@@ -60,8 +60,8 @@ void kms145App::setup() {
 	appWidth = ofGetWidth();
 	appHeight = ofGetHeight();
 
-	stream.setDeviceID(4);
-	stream.setup(this, 0, 1, 44100, bufferSize, 4);
+//	stream.setDeviceID(4);
+//	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 	ofSoundStreamListDevices();
 
 	serial.listDevices();
@@ -81,28 +81,31 @@ void kms145App::setup() {
 }
 
 void kms145App::setupGui(){
-	gui.setup("gui","settings.xml",bufferSize+25,25);
+	gui.setup("gui","settings.xml",25,25);
+	gui.setSize(400,0);
+	gui.add(streamGui.setup("soundInput",&stream,this));
 	bangDetect.setName("bangDetect");
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
 	bangDetect.add(minimumThreshold.set("minThreshold",0.1,0,1));
 	bangDetect.add(bangTime.set("bangTime",100,0,500));
-	rootGroup.add(bangDetect);
+	gui.add(bangDetect);
 	autoGain.setName("autoGain");
 	autoGain.add(bAutoGain.set("useAutoGain",true));
 	autoGain.add(gain.set("gain",1,0,20));
 	autoGain.add(minGain.set("minGain",1,0,20));
 	autoGain.add(limit.set("limit",1,0,1));
-	rootGroup.add(autoGain);
+	gui.add(autoGain);
 	general.setName("general");
 	general.add(binRange.set("binRange",10,1,fft->getBinSize()/4.f));
 	general.add(wireCount.set("wireCount",2,1,maxWireCount));
 	general.add(bUseAvg.set("useAvg",true));
 	general.add(bUseFilter.set("useEq",false));
 	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
-	rootGroup.add(general);
-	rootGroup.setName("groups");
-	gui.add(rootGroup);
+	gui.add(general);
+//	rootGroup.setName("groups");
+//	gui.add(rootGroup);
+	gui.setWidthElements(400);
 	gui.loadFromFile("settings.xml");
 
 	DC.setupFromGui(gui);
@@ -155,6 +158,9 @@ void kms145App::parameterChanged( ofAbstractParameter & parameter ){
 }
 
 void kms145App::update() {
+	//sound device gui
+	streamGui.update();
+
 	//simple version of a auto gain TODO
 	if(bAutoGain){
 		if(eStupidDownGain){
