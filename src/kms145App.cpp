@@ -205,7 +205,7 @@ void kms145App::update() {
 	if(eInitRequest){
 		eInitRequest = false;
 		jsonString = DC.parseParamsToJson();
-		cout << "parsed json string" << jsonString;
+		ofLogNotice("kms145App::update") << "parsed json string:" << jsonString;
 		server.send(jsonString);
 	}
 
@@ -321,15 +321,12 @@ void kms145App::audioReceived(float* input, int bufferSize, int nChannels) {
 	rms = sqrt(rms);
 	currVol = rms;
 
-//	cout << rms << " " << threshold << endl;
-
 	long tNow = ofGetElapsedTimeMillis();
 	if(tNow-tLastDetection > onsetDelay)
 		threshold = ofLerp(threshold, minimumThreshold, decayRate);
 
     if(rms > threshold) {
         // onset detected!
-    	cout << "ONSET" << endl;
     	tLastDetection = tNow;
         threshold = rms;
         eBang = true;
@@ -408,11 +405,11 @@ void kms145App::onIdle( ofxLibwebsockets::Event& args ){
 
 //--------------------------------------------------------------
 void kms145App::onMessage( ofxLibwebsockets::Event& args ){
-    cout<<"got message "<<args.message<<endl;
+    ofLogVerbose("kms145App::onMessage");
 
     // trace out string messages or JSON messages!
     if ( !args.json.isNull() ){
-        cout << "New message: " << args.json.toStyledString() << " from " << args.conn.getClientName();
+    	ofLogVerbose("kms145App::onMessage") << "json message: " << args.json.toStyledString() << " from " << args.conn.getClientName();
 
         if(args.json["type"]=="initRequest"){
         	eInitRequest = true;
@@ -425,7 +422,6 @@ void kms145App::onMessage( ofxLibwebsockets::Event& args ){
 
 //--------------------------------------------------------------
 void kms145App::onBroadcast( ofxLibwebsockets::Event& args ){
-    cout<<"got broadcast "<<args.message<<endl;
 }
 
 void kms145App::keyPressed(int key) {
