@@ -131,11 +131,17 @@ void kms145App::parameterChanged( ofAbstractParameter & parameter ){
 	json["type"] = "update";
 
 	if(parameter.type()==typeid(ofParameter<int>).name()){
+		const ofParameter<int> & p = parameter.cast<int>();
+		json[ "value" ] = p.get();
+		json[ "name" ] = p.getName();
 	}else if(parameter.type()==typeid(ofParameter<float>).name()){
 		const ofParameter<float> & p = parameter.cast<float>();
 		json[ "value" ] = p.get();
 		json[ "name" ] = p.getName();
 	}else if(parameter.type()==typeid(ofParameter<bool>).name()){
+		const ofParameter<bool> & p = parameter.cast<bool>();
+		json[ "value" ] = p.get();
+		json[ "name" ] = p.getName();
 	}else if(parameter.type()==typeid(ofParameter<ofColor>).name()){
 		const ofParameter<ofColor> & p = parameter.cast<ofColor>();
 
@@ -210,7 +216,7 @@ void kms145App::update() {
 	}
 
 	if(onUpdate){
-		DC.setParamFromJson(paramUpdate);
+		DC.updateParamFromJson(paramUpdate);
 		onUpdate = false;
 	}
 }
