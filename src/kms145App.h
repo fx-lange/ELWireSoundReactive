@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ofxSyncedParams.h"
 #include "ofMain.h"
 #include "ofxFft.h"
-#include "ofxSynchedParams.h"
 #include "ofxLibwebsockets.h"
 #include "ofxSoundStreamGui.h"
 
@@ -50,7 +50,7 @@ public:
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
 	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain;
-	ofxSynchedParams DC;
+	ofxSyncedParams DC;
 
 	ofxSoundStreamGui streamGui;
 
