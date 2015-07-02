@@ -2,12 +2,10 @@
 
 //TODO auto bin resize
 //TODO smart auto gain
-//TODO logarit output
-//TODO eq by dragging
-//Todo bin settings
-//todo frequence range
-//TODO usb sound card
-//TODO gui for serial & sound setup
+//TODO eq by dragging or sliders?!
+//TODO bin settings
+//TODO frequence range
+//TODO gui for serial setup
 //TODO draw independent of buffersize
 
 int baud = 57600;
@@ -108,7 +106,7 @@ void kms145App::setupGui(){
 	gui.setWidthElements(400);
 	gui.loadFromFile("settings.xml");
 
-	DC.setupFromGui(gui);
+	paramSync.setupFromGui(gui);
 	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&kms145App::parameterChanged);
 }
 
@@ -210,13 +208,13 @@ void kms145App::update() {
 	//webUi
 	if(eInitRequest){
 		eInitRequest = false;
-		jsonString = DC.parseParamsToJson();
+		jsonString = paramSync.parseParamsToJson();
 		ofLogNotice("kms145App::update") << "parsed json string:" << jsonString;
 		server.send(jsonString);
 	}
 
 	if(onUpdate){
-		DC.updateParamFromJson(paramUpdate);
+		paramSync.updateParamFromJson(paramUpdate);
 		onUpdate = false;
 	}
 }
