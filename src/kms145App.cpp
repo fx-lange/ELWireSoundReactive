@@ -79,7 +79,7 @@ void kms145App::setup() {
 }
 
 void kms145App::setupGui(){
-	gui.setup("gui","settings.xml",25,25);
+	gui.setup("gui","settings.xml",50,50);
 	gui.setSize(400,0);
 	gui.add(streamGui.setup("soundInput",&stream,this));
 	bangDetect.setName("bangDetect");
@@ -101,8 +101,6 @@ void kms145App::setupGui(){
 	general.add(bUseFilter.set("useEq",false));
 	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
 	gui.add(general);
-//	rootGroup.setName("groups");
-//	gui.add(rootGroup);
 	gui.setWidthElements(400);
 	gui.loadFromFile("settings.xml");
 
