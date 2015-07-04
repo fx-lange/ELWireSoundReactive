@@ -63,7 +63,7 @@ void kms145App::setup() {
 	ofSoundStreamListDevices();
 
 	serial.listDevices();
-	serial.setup("/dev/ttyACM0", baud);
+//	serial.setup("/dev/ttyACM0", baud);
 
 	ofBackground(0, 0, 0);
 
@@ -82,6 +82,7 @@ void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",50,50);
 	gui.setSize(400,0);
 	gui.add(streamGui.setup("soundInput",&stream,this));
+	gui.add(serialGui.setup("serial",&serial,this));
 	bangDetect.setName("bangDetect");
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));

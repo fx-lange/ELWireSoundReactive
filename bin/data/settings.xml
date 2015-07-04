@@ -30,8 +30,8 @@
 		<bangTime>100</bangTime>
 	</bangDetect>
 	<autoGain>
-		<useAutoGain>1</useAutoGain>
-		<gain>5.32452</gain>
+		<useAutoGain>0</useAutoGain>
+		<gain>5.31356</gain>
 		<minGain>5.30612</minGain>
 		<limit>1</limit>
 	</autoGain>
@@ -42,4 +42,9 @@
 		<useEq>0</useEq>
 		<smoothFactor>0.1</smoothFactor>
 	</general>
+<serial>
+		<connectOnStart>0</connectOnStart>
+		<deviceId>0</deviceId>
+		<baudrateIdx>10</baudrateIdx>
+	</serial>
 </gui>

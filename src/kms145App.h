@@ -5,7 +5,7 @@
 #include "ofxFft.h"
 #include "ofxLibwebsockets.h"
 #include "ofxSoundStreamGui.h"
-
+#include "ofxSerialGui.h"
 
 #define MIC 0
 #define NOISE 1
@@ -53,6 +53,7 @@ public:
 	ofxSyncedParams paramSync;
 
 	ofxSoundStreamGui streamGui;
+	ofxSerialGui serialGui;
 
 	//onset detection
 	float threshold, currVol;
