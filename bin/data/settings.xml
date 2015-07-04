@@ -13,4 +13,33 @@
 	<bang_time>5</bang_time>
 <limit>0.05</limit>
 <min_gain>0</min_gain>
+<soundInput>
+		<deviceId>4</deviceId>
+	<bufferSizeExp>10</bufferSizeExp>
+		<sampleRateIdx>8</sampleRateIdx>
+		<outputChannels>0</outputChannels>
+		<inputChannels>1</inputChannels>
+		<nBuffers>4</nBuffers>
+		<setup>1</setup>
+	<connectOnStart>1</connectOnStart>
+	</soundInput>
+	<bangDetect>
+		<onsetDelay>100</onsetDelay>
+		<decayRate>0.5</decayRate>
+		<minThreshold>0.405612</minThreshold>
+		<bangTime>100</bangTime>
+	</bangDetect>
+	<autoGain>
+		<useAutoGain>1</useAutoGain>
+		<gain>5.32452</gain>
+		<minGain>5.30612</minGain>
+		<limit>1</limit>
+	</autoGain>
+	<general>
+		<binRange>2</binRange>
+		<wireCount>7</wireCount>
+		<useAvg>1</useAvg>
+		<useEq>0</useEq>
+		<smoothFactor>0.1</smoothFactor>
+	</general>
 </gui>
