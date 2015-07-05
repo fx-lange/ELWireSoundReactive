@@ -24,23 +24,23 @@
 	<connectOnStart>1</connectOnStart>
 	</soundInput>
 	<bangDetect>
-		<onsetDelay>100</onsetDelay>
-		<decayRate>0.5</decayRate>
-		<minThreshold>0.405612</minThreshold>
-		<bangTime>100</bangTime>
+		<onsetDelay>688</onsetDelay>
+		<decayRate>0.0847194</decayRate>
+		<minThreshold>0.178571</minThreshold>
+		<bangTime>20</bangTime>
 	</bangDetect>
 	<autoGain>
-		<useAutoGain>0</useAutoGain>
-		<gain>5.31356</gain>
-		<minGain>5.30612</minGain>
+		<useAutoGain>1</useAutoGain>
+		<gain>6.68488</gain>
+		<minGain>6.68367</minGain>
 		<limit>1</limit>
 	</autoGain>
 	<general>
-		<binRange>2</binRange>
+		<binRange>4</binRange>
 		<wireCount>7</wireCount>
 		<useAvg>1</useAvg>
 		<useEq>0</useEq>
-		<smoothFactor>0.1</smoothFactor>
+		<smoothFactor>0.4025</smoothFactor>
 	</general>
 <serial>
 		<connectOnStart>0</connectOnStart>
