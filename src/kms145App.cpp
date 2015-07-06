@@ -2,7 +2,7 @@
 
 //TODO auto bin resize
 //TODO smart auto gain
-//TODO eq by dragging or sliders?!
+//TODO different bang modes
 //TODO bin settings
 //TODO frequence range
 //TODO gui for serial setup
@@ -102,6 +102,13 @@ void kms145App::setupGui(){
 	general.add(bUseFilter.set("useEq",false));
 	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
 	gui.add(general);
+	eqGroup.setName("binEQ");
+	eqGroup.add(bUseBinEq.set("useBinEqs",true));
+	binEqs.resize(7);
+	for(int i=0;i<(int)binEqs.size();++i){
+		eqGroup.add(binEqs[i].set("binEq"+ofToString(i),i/(float)binEqs.size(),0,1));
+	}
+	gui.add(eqGroup);
 	gui.setWidthElements(400);
 	gui.loadFromFile("settings.xml");
 
@@ -193,13 +200,12 @@ void kms145App::update() {
 	}
 
 	//serial communication
-	//TODO linear interpolation between 0-255 doesn't really fit the brightness curve of El Wires
 	if(bSendSerial){
 		for(int i=0;i<wireCount;++i){
 			if(bBang){
 				serial.writeByte((char)255);
 			}else{
-				serial.writeByte((char)(smoothedOutput[i]*256.f));
+				serial.writeByte(smoothedOutput[i]*256.f);
 			}
 		}
 	}
@@ -373,6 +379,11 @@ void kms145App::setOutput(float * array){
 			sum /= (float)binRange;
 		output[wireIdx] = sum;
 		smoothedOutput[wireIdx] += (output[wireIdx]  - smoothedOutput[wireIdx]) * smoothFactor;
+
+		if(bUseBinEq && wireIdx < (int)binEqs.size()){
+			smoothedOutput[wireIdx] *= binEqs[wireIdx];
+		}
+
 		if(smoothedOutput[wireIdx] > limit){
 			smoothedOutput[wireIdx] = limit;
 			eStupidDownGain = true;

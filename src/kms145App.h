@@ -46,10 +46,11 @@ public:
 
 	//----
 	ofxPanel gui;
-	ofParameterGroup bangDetect,autoGain,general, rootGroup;
+	ofParameterGroup bangDetect,autoGain,general, rootGroup, eqGroup;
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
-	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain;
+	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain, bUseBinEq;
+	vector< ofParameter<float> > binEqs;
 	ofxSyncedParams paramSync;
 
 	ofxSoundStreamGui streamGui;
