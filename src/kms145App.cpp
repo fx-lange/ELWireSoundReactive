@@ -32,9 +32,6 @@ void kms145App::setup() {
 
 	audioInput = new float[bufferSize];
 	fftOutput = new float[fft->getBinSize()];
-	eqFunction = new float[fft->getBinSize()];
-	eqOutput = new float[fft->getBinSize()];
-	ifftOutput = new float[bufferSize];
 
 	smoothedOutput.resize(maxWireCount);
 	output.resize(maxWireCount);
@@ -46,13 +43,6 @@ void kms145App::setup() {
 	// 44100 samples per second
 	// [bins] samples per buffer
 	// 4 num buffers (latency)
-
-	// this describes a linear low pass filter
-	//TODO do we need some filter?
-	for(int i = 0; i < fft->getBinSize(); i++){
-		eqFunction[i] = (float) (fft->getBinSize() - i) / (float) fft->getBinSize();
-//		eqFunction[i] = ofMap(eqFunction[i],0,1,1,025);
-	}
 
 	mode = MIC;
 	appWidth = ofGetWidth();
@@ -99,7 +89,6 @@ void kms145App::setupGui(){
 	general.add(binRange.set("binRange",10,1,fft->getBinSize()/4.f));
 	general.add(wireCount.set("wireCount",2,1,maxWireCount));
 	general.add(bUseAvg.set("useAvg",true));
-	general.add(bUseFilter.set("useEq",false));
 	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
 	gui.add(general);
 	eqGroup.setName("binEQ");
@@ -228,27 +217,19 @@ void kms145App::draw() {
 	ofSetColor(255);
 	ofPushMatrix();
 
-	glTranslatef(16, 16, 0);
+	//draw audio input
+	ofTranslate(16, 16, 0);
 	ofDrawBitmapString("Audio Input", 0, 0);
 	plot(audioInput, bufferSize, plotHeight / 2, 0);
 
-	glTranslatef(0, plotHeight + 16, 0);
+	//draw FFT of audio input
+	ofTranslate(0, plotHeight + 16, 0);
 	ofDrawBitmapString("FFT Output", 0, 0);
 	plot(fftOutput, fft->getBinSize(), -plotHeight, plotHeight / 2);
 	drawRedLine();
 
-	ofPushMatrix();
-	glTranslatef(fft->getBinSize(), 0, 0);
-	ofDrawBitmapString("EQd FFT Output", 0, 0);
-	plot(eqOutput, fft->getBinSize(), -plotHeight, plotHeight / 2);
-	drawRedLine();
-	ofPopMatrix();
-
-//	glTranslatef(0, plotHeight + 16, 0);
-//	ofDrawBitmapString("IFFT Output", 0, 0);
-//	plot(ifftOutput, fft->getSignalSize(), plotHeight / 2, 0);
-
-	glTranslatef(0, (plotHeight + 16), 0);
+	//draw processed data (AVG bins)
+	ofTranslate(0, (plotHeight + 16), 0);
 	ofPushStyle();
 	ofScale(2,2);
 	ofDrawBitmapString("Ext Plot", 0, 0);
@@ -256,8 +237,9 @@ void kms145App::draw() {
 	drawRedLine();
 	ofPopStyle();
 
+	//draw volume & bang threshold
 	ofPushMatrix();
-	glTranslatef(fft->getBinSize(), 0, 0);
+	ofTranslate(fft->getBinSize(), 0, 0);
 	ofDrawBitmapString("Bang", 0, 0);
 	plotVolume(-plotHeight, plotHeight / 2);
 	ofPopMatrix();
@@ -273,14 +255,14 @@ void kms145App::draw() {
 void kms145App::drawRedLine(){
 	ofPushStyle();
 	ofSetColor(255,0,0);
-	ofLine(wireCount*binRange,0,wireCount*binRange,plotHeight);
+	ofDrawLine(wireCount*binRange,0,wireCount*binRange,plotHeight);
 	ofPopStyle();
 }
 
 void kms145App::plot(float* array, int length, float scale, float offset) {
 	ofSetColor(255);
 	ofNoFill();
-	ofRect(0, 0, length, plotHeight);
+	ofDrawRectangle(0, 0, length, plotHeight);
 	glPushMatrix();
 	glTranslatef(0, plotHeight / 2 + offset, 0);
 	ofBeginShape();
@@ -292,11 +274,11 @@ void kms145App::plot(float* array, int length, float scale, float offset) {
 
 void kms145App::plotOutput(float width, float scale, float offset) {
 	ofNoFill();
-	ofRect(0, 0, width, plotHeight);
+	ofDrawRectangle(0, 0, width, plotHeight);
 	glPushMatrix();
 	glTranslatef(0, plotHeight / 2 + offset, 0);
 	for (int i = 0; i < wireCount; ++i){
-		ofRect(i*binRange,0,binRange,smoothedOutput[i]*scale);
+		ofDrawRectangle(i*binRange,0,binRange,smoothedOutput[i]*scale);
 	}
 	glPopMatrix();
 }
@@ -308,11 +290,11 @@ void kms145App::plotVolume(float scale, float offset){
 	glTranslatef(0, plotHeight / 2 + offset, 0);
 	float y = ofMap(threshold,0,0.4,0,scale);
 	ofSetColor(255,0,0);
-	ofLine(0,y,50,y);
+	ofDrawLine(0,y,50,y);
 	ofFill();
 	float volY = ofMap(currVol,0,0.4,0,scale);
 	ofSetColor(255);
-	ofRect(0,0,50,volY);
+	ofDrawRectangle(0,0,50,volY);
 	glPopMatrix();
 }
 
@@ -356,14 +338,7 @@ void kms145App::audioReceived(float* input, int bufferSize, int nChannels) {
 	fft->setSignal(audioInput);
 	memcpy(fftOutput, fft->getAmplitude(), sizeof(float) * fft->getBinSize());
 
-	for(int i = 0; i < fft->getBinSize(); i++)
-		eqOutput[i] = fftOutput[i] * eqFunction[i];
-
-	if(bUseFilter){
-		setOutput(eqOutput);
-	}else{
-		setOutput(fftOutput);
-	}
+	setOutput(fftOutput);
 }
 
 void kms145App::setOutput(float * array){
@@ -393,26 +368,6 @@ void kms145App::setOutput(float * array){
 }
 
 //--------------------------------------------------------------
-void kms145App::onConnect( ofxLibwebsockets::Event& args ){
-    cout<<"on connected"<<endl;
-}
-
-//--------------------------------------------------------------
-void kms145App::onOpen( ofxLibwebsockets::Event& args ){
-    cout<<"new connection open"<<endl;
-}
-
-//--------------------------------------------------------------
-void kms145App::onClose( ofxLibwebsockets::Event& args ){
-    cout<<"on close"<<endl;
-}
-
-//--------------------------------------------------------------
-void kms145App::onIdle( ofxLibwebsockets::Event& args ){
-    cout<<"on idle"<<endl;
-}
-
-//--------------------------------------------------------------
 void kms145App::onMessage( ofxLibwebsockets::Event& args ){
     ofLogVerbose("kms145App::onMessage");
 
@@ -427,10 +382,6 @@ void kms145App::onMessage( ofxLibwebsockets::Event& args ){
 			onUpdate = true;
         }
     }
-}
-
-//--------------------------------------------------------------
-void kms145App::onBroadcast( ofxLibwebsockets::Event& args ){
 }
 
 void kms145App::keyPressed(int key) {

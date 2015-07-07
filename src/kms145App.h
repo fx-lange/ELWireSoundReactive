@@ -35,9 +35,6 @@ public:
 
 	float* audioInput;
 	float* fftOutput;
-	float* eqFunction;
-	float* eqOutput;
-	float* ifftOutput;
 
 	float appWidth;
 	float appHeight;
@@ -49,7 +46,7 @@ public:
 	ofParameterGroup bangDetect,autoGain,general, rootGroup, eqGroup;
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
-	ofParameter<bool> bUseAvg, bUseFilter, bAutoGain, bUseBinEq;
+	ofParameter<bool> bUseAvg, bAutoGain, bUseBinEq;
 	vector< ofParameter<float> > binEqs;
 	ofxSyncedParams paramSync;
 
@@ -72,10 +69,10 @@ public:
     bool bSetup;
 
     // websocket methods
-	void onConnect( ofxLibwebsockets::Event& args );
-	void onOpen( ofxLibwebsockets::Event& args );
-	void onClose( ofxLibwebsockets::Event& args );
-	void onIdle( ofxLibwebsockets::Event& args );
 	void onMessage( ofxLibwebsockets::Event& args );
-	void onBroadcast( ofxLibwebsockets::Event& args );
+	void onConnect( ofxLibwebsockets::Event& args ){}
+	void onOpen( ofxLibwebsockets::Event& args ){}
+	void onClose( ofxLibwebsockets::Event& args ){}
+	void onIdle( ofxLibwebsockets::Event& args ){}
+	void onBroadcast( ofxLibwebsockets::Event& args ){}
 };
