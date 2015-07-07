@@ -224,9 +224,12 @@ void kms145App::draw() {
 
 	//draw FFT of audio input
 	ofTranslate(0, plotHeight + 16, 0);
+	ofPushMatrix();
+	ofScale(2,1);
 	ofDrawBitmapString("FFT Output", 0, 0);
 	plot(fftOutput, fft->getBinSize(), -plotHeight, plotHeight / 2);
 	drawRedLine();
+	ofPopMatrix();
 
 	//draw processed data (AVG bins)
 	ofTranslate(0, (plotHeight + 16), 0);
