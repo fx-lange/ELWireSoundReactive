@@ -1,12 +1,15 @@
 #include "kms145App.h"
 
+//TODO Readme & upload arduino sketch
+//TODO gui for serial setup - not showing the arduino
+//TODO debug draw for binEq vs non filtered
+//TODO different bang modes
 //TODO auto bin resize
 //TODO smart auto gain
-//TODO different bang modes
 //TODO bin settings
 //TODO frequence range
-//TODO gui for serial setup
 //TODO draw independent of buffersize
+//TODO eq on fft vs eq on bins?!
 
 int baud = 57600;
 
@@ -38,12 +41,6 @@ void kms145App::setup() {
 
 	setupGui();
 
-	// 0 output channels,
-	// 1 input channel
-	// 44100 samples per second
-	// [bins] samples per buffer
-	// 4 num buffers (latency)
-
 	mode = MIC;
 	appWidth = ofGetWidth();
 	appHeight = ofGetHeight();
@@ -53,7 +50,7 @@ void kms145App::setup() {
 	ofSoundStreamListDevices();
 
 	serial.listDevices();
-	serial.setup("/dev/ttyACM0", baud);
+//	serial.setup("/dev/ttyACM0", baud);
 
 	ofBackground(0, 0, 0);
 
@@ -72,7 +69,7 @@ void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",50,50);
 	gui.setSize(400,0);
 	gui.add(streamGui.setup("soundInput",&stream,this));
-//	gui.add(serialGui.setup("serial",&serial,this));
+	gui.add(serialGui.setup("serial",&serial,this));
 	bangDetect.setName("bangDetect");
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
@@ -102,58 +99,13 @@ void kms145App::setupGui(){
 	gui.loadFromFile("settings.xml");
 
 	paramSync.setupFromGui(gui);
-	ofAddListener(((ofParameterGroup&)gui.getParameter()).parameterChangedE,this,&kms145App::parameterChanged);
+	ofAddListener(paramSync.paramChangedE,this,&kms145App::parameterChanged);
 }
 
-void kms145App::parameterChanged( ofAbstractParameter & parameter ){
+void kms145App::parameterChanged( std::string & paramAsJsonString ){
 	ofLogVerbose("kms145App::parameterChanged");
-	if(onUpdate){
-		ofLogVerbose("kms145App::parameterChanged") << "on update -> return";
-		return;
-	}
-
-//	if(updatingParameter) return;
-//	sender.sendParameter(parameter);
-	Json::Value path;
-	const vector<string> hierarchy = parameter.getGroupHierarchyNames();
-	for(int i=0;i<(int)hierarchy.size()-1;i++){
-		path.append(hierarchy[i]);
-	}
-
-	Json::Value json;
-	json["type"] = "update";
-
-	if(parameter.type()==typeid(ofParameter<int>).name()){
-		const ofParameter<int> & p = parameter.cast<int>();
-		json[ "value" ] = p.get();
-		json[ "name" ] = p.getName();
-	}else if(parameter.type()==typeid(ofParameter<float>).name()){
-		const ofParameter<float> & p = parameter.cast<float>();
-		json[ "value" ] = p.get();
-		json[ "name" ] = p.getName();
-	}else if(parameter.type()==typeid(ofParameter<bool>).name()){
-		const ofParameter<bool> & p = parameter.cast<bool>();
-		json[ "value" ] = p.get();
-		json[ "name" ] = p.getName();
-	}else if(parameter.type()==typeid(ofParameter<ofColor>).name()){
-		const ofParameter<ofColor> & p = parameter.cast<ofColor>();
-
-        Json::Value jsonArray;
-        jsonArray.append(p.get().r);
-        jsonArray.append(p.get().g);
-        jsonArray.append(p.get().b);
-
-        json[ "value" ] = jsonArray;
-        json[ "name" ] = p.getName();
-	}else{
-	}
-
-	json["path"] = path;
-	ofxJSONElement element(json);
-	ofLogNotice(element.toStyledString());
-
-	server.send( element.toStyledString() );
-
+	if(!onUpdate)
+		server.send( paramAsJsonString );
 }
 
 void kms145App::update() {

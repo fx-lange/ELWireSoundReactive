@@ -16,7 +16,7 @@ public:
 	void setup();
 	void setupGui();
 
-	void parameterChanged( ofAbstractParameter & parameter);
+	void parameterChanged( std::string & );
 
 	void update();
 	void setOutput(float * arrays);
