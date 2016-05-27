@@ -35,6 +35,7 @@ void kms145App::setup() {
 
 	audioInput = new float[bufferSize];
 	fftOutput = new float[fft->getBinSize()];
+	ofLogNotice() << ofToString(fft->getBinSize());
 
 	smoothedOutput.resize(maxWireCount);
 	output.resize(maxWireCount);
@@ -46,8 +47,12 @@ void kms145App::setup() {
 	appHeight = ofGetHeight();
 
 //	stream.setDeviceID(4);
-//	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 	ofSoundStreamListDevices();
+//	auto devices = stream.getMatchingDevices("default");
+//	if(!devices.empty()){
+//		stream.setDeviceID(devices[0].deviceID);
+//	}
+//	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 
 	serial.listDevices();
 //	serial.setup("/dev/ttyACM0", baud);
@@ -62,7 +67,7 @@ void kms145App::setup() {
 	options.port = 9092;
 	options.bUseSSL = false; // you'll have to manually accept this self-signed cert if 'true'!
 	bSetup = server.setup( options );
-	server.addListener(this);
+//	server.addListener(this);
 }
 
 void kms145App::setupGui(){
@@ -146,7 +151,8 @@ void kms145App::update() {
 			if(bBang){
 				serial.writeByte((char)255);
 			}else{
-				serial.writeByte(smoothedOutput[i]*256.f);
+				char byte = smoothedOutput[i]*256.f;
+				serial.writeByte(byte);
 			}
 		}
 	}
