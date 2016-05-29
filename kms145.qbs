@@ -15,6 +15,7 @@ Project{
             "addons.make",
             'src/*.cpp',
             'src/*.h',
+            'bin/data/**/*'
         ]
 
         // This project is using addons.make to include the addons
