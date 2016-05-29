@@ -49,6 +49,16 @@ public:
 	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
 	ofParameter<bool> bUseAvg, bAutoGain, bUseBinEq;
 	vector< ofParameter<float> > binEqs;
+
+	ofParameterGroup videoStreamGroup;
+	ofParameter<bool> bVideoStream;
+	ofParameter<float> grabScreenWidth, grabScreenHeight;
+	void onSizeChanged(ofAbstractParameter & param);
+
+	ofParameterGroup binSizesGroup;
+	ofParameter<bool> bUseCustomBinSizes;
+	vector< ofParameter<int> > binSizes;
+
 	ofxSyncedParams paramSync;
 
 	ofxSoundStreamGui streamGui;

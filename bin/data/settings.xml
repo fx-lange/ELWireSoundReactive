@@ -16,32 +16,32 @@
 <soundInput>
 		<deviceId>4</deviceId>
 	<bufferSizeExp>2</bufferSizeExp>
-		<sampleRateIdx>8</sampleRateIdx>
+		<sampleRateIdx>0</sampleRateIdx>
 		<outputChannels>0</outputChannels>
 		<inputChannels>1</inputChannels>
 		<nBuffers>4</nBuffers>
 		<setup>1</setup>
 	<connectOnStart>0</connectOnStart>
-	<device>5</device>
+	<device>4</device>
 	</soundInput>
 	<bangDetect>
 		<onsetDelay>688</onsetDelay>
 		<decayRate>0.0847194</decayRate>
-		<minThreshold>0.178571</minThreshold>
+		<minThreshold>0.984694</minThreshold>
 		<bangTime>25</bangTime>
 	</bangDetect>
 	<autoGain>
 		<useAutoGain>1</useAutoGain>
-		<gain>9.17643</gain>
-		<minGain>0.357143</minGain>
+		<gain>1.11142</gain>
+		<minGain>0</minGain>
 		<limit>1</limit>
 	</autoGain>
 	<general>
 		<binRange>7</binRange>
 		<wireCount>7</wireCount>
-		<useAvg>1</useAvg>
+		<useAvg>0</useAvg>
 		<useEq>0</useEq>
-		<smoothFactor>0.4025</smoothFactor>
+		<smoothFactor>0.45</smoothFactor>
 	</general>
 <serial>
 		<connectOnStart>0</connectOnStart>
@@ -52,12 +52,27 @@
 	</serial>
 <binEQ>
 		<useBinEqs>1</useBinEqs>
-		<binEq0>0.818878</binEq0>
-		<binEq1>0.90051</binEq1>
-		<binEq2>0.933673</binEq2>
-		<binEq3>0.987245</binEq3>
-		<binEq4>0.982143</binEq4>
-		<binEq5>0.977041</binEq5>
-		<binEq6>1</binEq6>
+		<binEq0>0.612245</binEq0>
+		<binEq1>0.673469</binEq1>
+		<binEq2>0.704082</binEq2>
+		<binEq3>0.727041</binEq3>
+		<binEq4>0.747449</binEq4>
+		<binEq5>0.719388</binEq5>
+		<binEq6>0.221939</binEq6>
 	</binEQ>
+<video_stream>
+		<stream_it>1</stream_it>
+		<width>500</width>
+		<height>400</height>
+	</video_stream>
+	<binSizes>
+		<useCustomSizes>1</useCustomSizes>
+		<binSize0>2</binSize0>
+		<binSize1>2</binSize1>
+		<binSize2>3</binSize2>
+		<binSize3>8</binSize3>
+		<binSize4>19</binSize4>
+		<binSize5>53</binSize5>
+		<binSize6>128</binSize6>
+	</binSizes>
 </gui>

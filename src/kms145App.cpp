@@ -29,9 +29,6 @@ string jsonString = "";
 bool onUpdate = false;
 bool eInitRequest = false;
 
-float grabScreenX = 500;
-float grabScreenY = 500;
-
 void kms145App::setup() {
 	plotHeight = 128;
 	bufferSize = 1024; //TODO streamGui bufferSize changed?!
@@ -85,14 +82,19 @@ void kms145App::setup() {
 	videoServer.setup(settings);
 	// Start the server.
 	videoServer.start();
-	screenShot.allocate(grabScreenX,grabScreenY,OF_IMAGE_COLOR);
+	screenShot.allocate(grabScreenWidth,grabScreenHeight,OF_IMAGE_COLOR);
 }
 
 void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",50,50);
-	gui.setSize(400,0);
+	gui.setSize(400,0);screenShot.allocate(grabScreenWidth,grabScreenHeight,OF_IMAGE_COLOR);
 	gui.add(streamGui.setup("soundInput",&stream,this));
 	gui.add(serialGui.setup("serial",&serial,this));
+	videoStreamGroup.setName("video stream");
+	videoStreamGroup.add(bVideoStream.set("stream it",true));
+	videoStreamGroup.add(grabScreenWidth.set("width",500,100,1024));
+	videoStreamGroup.add(grabScreenHeight.set("height",400,100,768));
+	gui.add(videoStreamGroup);
 	bangDetect.setName("bangDetect");
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
@@ -118,17 +120,34 @@ void kms145App::setupGui(){
 		eqGroup.add(binEqs[i].set("binEq"+ofToString(i),i/(float)binEqs.size(),0,1));
 	}
 	gui.add(eqGroup);
+	binSizesGroup.setName("binSizes");
+	binSizesGroup.add(bUseCustomBinSizes.set("useCustomSizes",false));
+	binSizes.resize(7);
+	for(int i=0;i<(int)binSizes.size();++i){
+		binSizesGroup.add(binSizes[i].set("binSize"+ofToString(i),2,1,128));
+	}
+	gui.add(binSizesGroup);
 	gui.setWidthElements(400);
 	gui.loadFromFile("settings.xml");
 
 	paramSync.setupFromGui(gui);
 	ofAddListener(paramSync.paramChangedE,this,&kms145App::parameterChanged);
+//	grabScreenWidth.addListener(this,&kms145App::onSizeChanged);
+//	grabScreenHeight.addListener(this,&kms145App::onSizeChanged);
+//	ofAddListener(videoStreamGroup.parameterChangedE(),&kms145App::onSizeChanged);
 }
 
 void kms145App::parameterChanged( std::string & paramAsJsonString ){
 	ofLogVerbose("kms145App::parameterChanged");
 	if(!onUpdate)
 		server.send( paramAsJsonString );
+}
+
+void kms145App::onSizeChanged(ofAbstractParameter &param){
+	bool videoStreamActive = bVideoStream;
+	bVideoStream = false;
+	screenShot.allocate(grabScreenWidth,grabScreenHeight,OF_IMAGE_COLOR);
+	bVideoStream = videoStreamActive;
 }
 
 void kms145App::update() {
@@ -227,7 +246,7 @@ void kms145App::draw() {
 	string msg = ofToString((int) ofGetFrameRate()) + " fps";
 	ofDrawBitmapString(msg, appWidth - 80, appHeight - 20);
 
-	screenShot.grabScreen(0,0,grabScreenX,grabScreenY);
+	screenShot.grabScreen(0,0,grabScreenWidth,grabScreenHeight);
 	videoServer.send(screenShot.getPixels());
 
 	if(bDrawGui)
@@ -256,11 +275,17 @@ void kms145App::plot(float* array, int length, float scale, float offset) {
 
 void kms145App::plotOutput(float width, float scale, float offset) {
 	ofNoFill();
-	ofDrawRectangle(0, 0, width, plotHeight);
+//	ofDrawRectangle(0, 0, width, plotHeight);
 	glPushMatrix();
 	glTranslatef(0, plotHeight / 2 + offset, 0);
+	float nextX = 0;
 	for (int i = 0; i < wireCount; ++i){
-		ofDrawRectangle(i*binRange,0,binRange,smoothedOutput[i]*scale);
+		float range = binRange;
+		if(bUseCustomBinSizes){
+			range = binSizes[i];
+		}
+		ofDrawRectangle(nextX,0,range,smoothedOutput[i]*scale);
+		nextX += range;
 	}
 	glPopMatrix();
 }
@@ -326,14 +351,25 @@ void kms145App::audioReceived(float* input, int bufferSize, int nChannels) {
 void kms145App::setOutput(float * array){
 	//TODO mutex?
 	int length = fft->getBinSize();
-	int wireIdx = 0;
-	for (int i = 0; i+binRange < length && i<wireCount*binRange; i+=binRange){
-		float sum=0;
-		for(int j=0;j<binRange;++j){
-			sum += array[i+j]*gain;
+	int lastBinIdx = 0;
+	for(int wireIdx=0;wireIdx<wireCount;++wireIdx){
+//	for (int i = 0; i+binRange < length && i<wireCount*binRange; i+=binRange){
+		int range = 1;
+		if(bUseCustomBinSizes){
+			range = binSizes[wireIdx];
+		}else{
+			range = binRange;
 		}
-		if(bUseAvg)
-			sum /= (float)binRange;
+
+		float sum=0;
+		for(int j=0;j<range;++j){
+			sum += array[lastBinIdx+j]*gain;
+		}
+
+		if(bUseAvg){
+			sum /= (float)range;
+		}
+
 		output[wireIdx] = sum;
 		smoothedOutput[wireIdx] += (output[wireIdx]  - smoothedOutput[wireIdx]) * smoothFactor;
 
@@ -345,7 +381,8 @@ void kms145App::setOutput(float * array){
 			smoothedOutput[wireIdx] = limit;
 			eStupidDownGain = true;
 		}
-		++wireIdx;
+
+		lastBinIdx += range;
 	}
 }
 
