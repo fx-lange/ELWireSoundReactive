@@ -46,8 +46,8 @@ function setupSocket(){
 	if (BrowserDetect.browser == "Firefox") {
 		socket = new MozWebSocket(get_appropriate_ws_url());
 	} else {
-		socket = new WebSocket(get_appropriate_ws_url()+":9092");
-		//socket = new WebSocket("ws://localhost:9092");
+        //socket = new WebSocket(get_appropriate_ws_url()+":9092");
+        socket = new WebSocket("ws://localhost:9092");
 	}
 	
 	// open
