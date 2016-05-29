@@ -257,8 +257,10 @@ void kms145App::draw() {
 	string msg = ofToString((int) ofGetFrameRate()) + " fps";
 	ofDrawBitmapString(msg, appWidth - 80, appHeight - 20);
 
-	screenShot.grabScreen(0,0,grabScreenWidth,grabScreenHeight);
-	videoServer.send(screenShot.getPixels());
+	if(bVideoStream){
+		screenShot.grabScreen(0,0,grabScreenWidth,grabScreenHeight);
+		videoServer.send(screenShot.getPixels());
+	}
 
 	if(bDrawGui)
 		gui.draw();
