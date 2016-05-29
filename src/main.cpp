@@ -3,7 +3,6 @@
 #include "ofAppGlutWindow.h"
 
 int main() {
-	ofAppGlutWindow window;
-	ofSetupOpenGL(&window, 800 + 32, (128 + 32) * 4, OF_WINDOW);
+	ofSetupOpenGL(1024,768, OF_WINDOW);
 	ofRunApp(new kms145App());
 }
