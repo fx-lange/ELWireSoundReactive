@@ -67,7 +67,7 @@ void kms145App::setup() {
 	options.port = 9092;
 	options.bUseSSL = false; // you'll have to manually accept this self-signed cert if 'true'!
 	bSetup = server.setup( options );
-//	server.addListener(this);
+	server.addListener(this);
 }
 
 void kms145App::setupGui(){
