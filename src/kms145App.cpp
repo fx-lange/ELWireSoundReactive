@@ -12,6 +12,7 @@
 //1,2,4,8,16,32,64 => 127 >= 10000
 //TODO draw independent of buffersize
 //TODO eq on fft vs eq on bins?!
+//no screen: https://forum.openframeworks.cc/t/running-of-app-with-no-screen-attached-on-rpi/15029
 
 int baud = 57600;
 
@@ -96,6 +97,7 @@ void kms145App::setupGui(){
 	videoStreamGroup.add(grabScreenHeight.set("height",400,100,768));
 	gui.add(videoStreamGroup);
 	bangDetect.setName("bangDetect");
+	bangDetect.add(bBangDetect.set("active",true));
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
 	bangDetect.add(minimumThreshold.set("minThreshold",0.1,0,1));
@@ -103,15 +105,18 @@ void kms145App::setupGui(){
 	gui.add(bangDetect);
 	autoGain.setName("autoGain");
 	autoGain.add(bAutoGain.set("useAutoGain",true));
-	autoGain.add(gain.set("gain",1,0,20));
+	autoGain.add(eSetMaxGain.set("recalibrate",false));
+//	autoGain.add(gain.set("gain",1,0,20));
+	gain = 50;
 	autoGain.add(minGain.set("minGain",1,0,20));
-	autoGain.add(limit.set("limit",1,0,1));
+	autoGain.add(gainIncrease.set("increase",1.00002,1,1.00102));
+	autoGain.add(limit.set("limit",1,0,2));
 	gui.add(autoGain);
 	general.setName("general");
 	general.add(binRange.set("binRange",10,1,fft->getBinSize()/4.f));
 	general.add(wireCount.set("wireCount",2,1,maxWireCount));
 	general.add(bUseAvg.set("useAvg",true));
-	general.add(smoothFactor.set("smoothFactor",0.1,0.01,0.5));
+	general.add(smoothFactor.set("smoothFactor",0.1,0.01,1));
 	gui.add(general);
 	eqGroup.setName("binEQ");
 	eqGroup.add(bUseBinEq.set("useBinEqs",true));
@@ -156,11 +161,15 @@ void kms145App::update() {
 
 	//simple version of a auto gain TODO
 	if(bAutoGain){
+		if(eSetMaxGain){
+			gain = 50;
+			eSetMaxGain = false;
+		}
 		if(eStupidDownGain){
 			eStupidDownGain = false;
 			gain = gain * 0.90;
 		}else{
-			gain = gain * 1.00002;
+			gain = gain * gainIncrease;
 		}
 		gain = gain < minGain ? (float)minGain : (float)gain;
 	}
@@ -174,7 +183,9 @@ void kms145App::update() {
 	}
 
 	if(bBang){
-		ofBackground(100);
+		if(bBangDetect){
+			ofBackground(100);
+		}
 		if(tNow - tBangStart > bangTime){
 			bBang = false;
 		}
@@ -185,7 +196,7 @@ void kms145App::update() {
 	//serial communication
 	if(bSendSerial){
 		for(int i=0;i<wireCount;++i){
-			if(bBang){
+			if(bBang && bBangDetect){
 				serial.writeByte((char)255);
 			}else{
 				char byte = smoothedOutput[i]*256.f;
@@ -230,7 +241,7 @@ void kms145App::draw() {
 	ofTranslate(0, (plotHeight + 16), 0);
 	ofPushStyle();
 	ofScale(2,2);
-	ofDrawBitmapString("Ext Plot", 0, 0);
+	ofDrawBitmapString("Ext Plot (Gain: "+ofToString(gain,2)+")", 0, 0);
 	plotOutput(fft->getBinSize(), -plotHeight, plotHeight / 2);
 	drawRedLine();
 	ofPopStyle();
@@ -378,9 +389,10 @@ void kms145App::setOutput(float * array){
 		}
 
 		if(smoothedOutput[wireIdx] > limit){
-			smoothedOutput[wireIdx] = limit;
 			eStupidDownGain = true;
 		}
+
+		smoothedOutput[wireIdx] = min(1.f,smoothedOutput[wireIdx]);
 
 		lastBinIdx += range;
 	}

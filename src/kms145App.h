@@ -46,8 +46,8 @@ public:
 	ofxPanel gui;
 	ofParameterGroup bangDetect,autoGain,general, rootGroup, eqGroup;
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
-	ofParameter<float> minGain, gain, smoothFactor, limit, decayRate, minimumThreshold;
-	ofParameter<bool> bUseAvg, bAutoGain, bUseBinEq;
+	ofParameter<float> minGain, gain, gainIncrease, smoothFactor, limit, decayRate, minimumThreshold;
+	ofParameter<bool> bUseAvg, bAutoGain, eSetMaxGain, bUseBinEq, bBangDetect;
 	vector< ofParameter<float> > binEqs;
 
 	ofParameterGroup videoStreamGroup;
