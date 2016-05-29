@@ -5,9 +5,11 @@
 //TODO debug draw for binEq vs non filtered
 //TODO different bang modes
 //TODO auto bin resize
-//TODO smart auto gain
+//TODO smart auto gain - the other way around?
 //TODO bin settings
 //TODO frequence range
+//example 512 bins for 44100 -> 86Hz per bin
+//1,2,4,8,16,32,64 => 127 >= 10000
 //TODO draw independent of buffersize
 //TODO eq on fft vs eq on bins?!
 
@@ -26,6 +28,9 @@ string jsonString = "";
 
 bool onUpdate = false;
 bool eInitRequest = false;
+
+float grabScreenX = 500;
+float grabScreenY = 500;
 
 void kms145App::setup() {
 	plotHeight = 128;
@@ -68,6 +73,19 @@ void kms145App::setup() {
 	options.bUseSSL = false; // you'll have to manually accept this self-signed cert if 'true'!
 	bSetup = server.setup( options );
 	server.addListener(this);
+
+	//video server
+	ofx::HTTP::SimpleIPVideoServerSettings settings;
+
+	// Many other settings are available.
+	settings.setPort(7890);
+	// The default maximum number of client connections is 5.
+	settings.ipVideoRouteSettings.setMaxClientConnections(1);
+	// Apply the settings.
+	videoServer.setup(settings);
+	// Start the server.
+	videoServer.start();
+	screenShot.allocate(grabScreenX,grabScreenY,OF_IMAGE_COLOR);
 }
 
 void kms145App::setupGui(){
@@ -208,6 +226,9 @@ void kms145App::draw() {
 	ofPopMatrix();
 	string msg = ofToString((int) ofGetFrameRate()) + " fps";
 	ofDrawBitmapString(msg, appWidth - 80, appHeight - 20);
+
+	screenShot.grabScreen(0,0,grabScreenX,grabScreenY);
+	videoServer.send(screenShot.getPixels());
 
 	if(bDrawGui)
 		gui.draw();

@@ -6,6 +6,7 @@
 #include "ofxLibwebsockets.h"
 #include "ofxSoundStreamGui.h"
 #include "ofxSerialGui.h"
+#include "ofxHTTP.h"
 
 #define MIC 0
 #define NOISE 1
@@ -75,4 +76,8 @@ public:
 	void onClose( ofxLibwebsockets::Event& args ){}
 	void onIdle( ofxLibwebsockets::Event& args ){}
 	void onBroadcast( ofxLibwebsockets::Event& args ){}
+
+	// remote video
+	ofx::HTTP::SimpleIPVideoServer videoServer;
+	ofImage screenShot;
 };
