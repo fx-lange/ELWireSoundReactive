@@ -29,7 +29,7 @@
 		<decayRate>0.0847194</decayRate>
 		<minThreshold>0.303571</minThreshold>
 		<bangTime>25</bangTime>
-	<active>1</active>
+	<active>0</active>
 	</bangDetect>
 	<autoGain>
 		<useAutoGain>1</useAutoGain>
@@ -44,7 +44,7 @@
 		<wireCount>7</wireCount>
 		<useAvg>1</useAvg>
 		<useEq>0</useEq>
-		<smoothFactor>0.964643</smoothFactor>
+		<smoothFactor>0.618648</smoothFactor>
 	</general>
 <serial>
 		<connectOnStart>0</connectOnStart>
@@ -78,4 +78,9 @@
 		<binSize5>53</binSize5>
 		<binSize6>96</binSize6>
 	</binSizes>
+<videoStream>
+		<streamIt>1</streamIt>
+		<width>500</width>
+		<height>400</height>
+	</videoStream>
 </gui>

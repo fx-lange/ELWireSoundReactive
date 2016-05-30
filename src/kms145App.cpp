@@ -19,7 +19,7 @@ int baud = 57600;
 bool bDrawGui = true;
 int maxWireCount = 10;
 
-bool bSendSerial = false;
+bool bSendSerial = true;
 
 bool eBang = false;
 bool bBang = false;
