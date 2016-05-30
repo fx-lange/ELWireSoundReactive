@@ -16,8 +16,8 @@ $(document).ready( function() {
 function setupSocket(){
 
 	// setup websocket
-    //socket = new WebSocket(get_appropriate_ws_url()+":9092");
-    socket = new WebSocket(get_appropriate_ws_url());
+    socket = new WebSocket(get_appropriate_ws_url()+":9092");
+//    socket = new WebSocket(get_appropriate_ws_url());
 
 	// open
 	try {
