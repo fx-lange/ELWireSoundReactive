@@ -58,7 +58,7 @@ void kms145App::setup() {
 //	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 
 	serial.listDevices();
-//	serial.setup("/dev/ttyACM0", baud);
+	serial.setup("/dev/ttyACM0", baud);
 
 	ofBackground(0, 0, 0);
 
@@ -88,11 +88,11 @@ void kms145App::setup() {
 
 void kms145App::setupGui(){
 	gui.setup("gui","settings.xml",50,50);
-	gui.setSize(400,0);screenShot.allocate(grabScreenWidth,grabScreenHeight,OF_IMAGE_COLOR);
+	gui.setSize(400,0);
 	gui.add(streamGui.setup("soundInput",&stream,this));
 	gui.add(serialGui.setup("serial",&serial,this));
-	videoStreamGroup.setName("video stream");
-	videoStreamGroup.add(bVideoStream.set("stream it",true));
+	videoStreamGroup.setName("videoStream");
+	videoStreamGroup.add(bVideoStream.set("streamIt",true));
 	videoStreamGroup.add(grabScreenWidth.set("width",500,100,1024));
 	videoStreamGroup.add(grabScreenHeight.set("height",400,100,768));
 	gui.add(videoStreamGroup);
