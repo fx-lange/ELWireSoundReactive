@@ -87,7 +87,7 @@ void kms145App::setup() {
 }
 
 void kms145App::setupGui(){
-	gui.setup("gui","settings.xml",50,50);
+	gui.setup("gui","settings.xml",bufferSize+50,50);
 	gui.setSize(400,0);
 	gui.add(streamGui.setup("soundInput",&stream,this));
 	gui.add(serialGui.setup("serial",&serial,this));
@@ -98,6 +98,7 @@ void kms145App::setupGui(){
 	gui.add(videoStreamGroup);
 	bangDetect.setName("bangDetect");
 	bangDetect.add(bBangDetect.set("active",true));
+	bangDetect.add(bShowBang.set("show",true));
 	bangDetect.add(onsetDelay.set("onsetDelay",100,0,2500));
 	bangDetect.add(decayRate.set("decayRate",0.5,0.01,0.3));
 	bangDetect.add(minimumThreshold.set("minThreshold",0.1,0,1));
@@ -253,6 +254,14 @@ void kms145App::draw() {
 	plotVolume(-plotHeight, plotHeight / 2);
 	ofPopMatrix();
 
+	if(bShowBang){
+		ofPushMatrix();
+		ofTranslate(0, 0, 0);
+		ofDrawBitmapString("Bang", 0, 0);
+		plotVolume(-plotHeight, plotHeight / 2);
+		ofPopMatrix();
+	}
+
 	ofPopMatrix();
 	string msg = ofToString((int) ofGetFrameRate()) + " fps";
 	ofDrawBitmapString(msg, appWidth - 80, appHeight - 20);
@@ -262,8 +271,13 @@ void kms145App::draw() {
 		videoServer.send(screenShot.getPixels());
 	}
 
-	if(bDrawGui)
+	if(bDrawGui){
+		ofPushStyle();
+		ofNoFill();
+		ofDrawRectangle(0,0,grabScreenWidth,grabScreenHeight);
 		gui.draw();
+		ofPopStyle();
+	}
 }
 
 void kms145App::drawRedLine(){

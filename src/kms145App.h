@@ -47,7 +47,7 @@ public:
 	ofParameterGroup bangDetect,autoGain,general, rootGroup, eqGroup;
 	ofParameter<int> binRange, wireCount, onsetDelay, bangTime;
 	ofParameter<float> minGain, gain, gainIncrease, smoothFactor, limit, decayRate, minimumThreshold;
-	ofParameter<bool> bUseAvg, bAutoGain, eSetMaxGain, bUseBinEq, bBangDetect;
+	ofParameter<bool> bUseAvg, bAutoGain, eSetMaxGain, bUseBinEq, bBangDetect, bShowBang;
 	vector< ofParameter<float> > binEqs;
 
 	ofParameterGroup videoStreamGroup;
