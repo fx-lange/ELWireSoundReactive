@@ -19,7 +19,7 @@ int baud = 57600;
 bool bDrawGui = true;
 int maxWireCount = 10;
 
-bool bSendSerial = true;
+bool bSendSerial = false;
 
 bool eBang = false;
 bool bBang = false;
@@ -58,7 +58,7 @@ void kms145App::setup() {
 //	stream.setup(this, 0, 1, 44100, bufferSize, 4);
 
 	serial.listDevices();
-	serial.setup("/dev/ttyACM0", baud);
+	bSendSerial = serial.setup("/dev/ttyACM0", baud);
 
 	ofBackground(0, 0, 0);
 
@@ -194,7 +194,7 @@ void kms145App::update() {
 	}
 
 	//serial communication
-	if(bSendSerial){
+	if(bSendSerial && ofGetElapsedTimef() > 2){
 		for(int i=0;i<wireCount;++i){
 			if(bBang && bBangDetect){
 				serial.writeByte((char)255);
